@@ -70,13 +70,14 @@ A simple ToDo application built with Flask and PostgreSQL.
 - `completed`: Boolean (default: false)
 - `created_at`: DateTime (read-only)
 - `updated_at`: DateTime (read-only)
-- `tags`: List of tags (e.g., [{"name": "work"}])
+- `tags`: List of tags (optional) (e.g., [{"name": "work"}])
 
 Example POST request:
 
 ```json
 {
 	"title": "Learn Flask",
-	"description": "Build a REST API"
+	"description": "Build a REST API",
+	"tags": [{ "name": "work" }, { "name": "learning" }]
 }
 ```
