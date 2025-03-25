@@ -60,6 +60,7 @@ A simple ToDo application built with Flask and PostgreSQL.
 | POST   | `/api/tasks/`     | Create a new task   |
 | PUT    | `/api/tasks/<id>` | Update a task by ID |
 | DELETE | `/api/tasks/<id>` | Delete a task by ID |
+| GET    | `/api/tags/`      | Get all tags        |
 
 **Task Fields:**
 
@@ -69,16 +70,13 @@ A simple ToDo application built with Flask and PostgreSQL.
 - `completed`: Boolean (default: false)
 - `created_at`: DateTime (read-only)
 - `updated_at`: DateTime (read-only)
+- `tags`: List of tags (e.g., [{"name": "work"}])
 
 Example POST request:
 
 ```json
 {
-	"completed": false,
-	"created_at": "2025-03-25T15:28:20.630185",
-	"description": "Build a REST API",
-	"id": 1,
 	"title": "Learn Flask",
-	"updated_at": "2025-03-25T15:28:20.630188"
+	"description": "Build a REST API"
 }
 ```

@@ -13,8 +13,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from app.routes import tasks
+    from app.routes import tags, tasks
 
     app.register_blueprint(tasks.bp)
+    app.register_blueprint(tags.bp)
 
     return app

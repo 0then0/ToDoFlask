@@ -1,8 +1,9 @@
 from flask import Blueprint, jsonify, request
 
 from app import db
-from app.models.task import Task
-from app.schemas import task_schema, tasks_schema
+from app.models.tag import Tag
+from app.models.task import Task, task_tag
+from app.schemas import tag_schema, tags_schema, task_schema, tasks_schema
 
 bp = Blueprint("tasks", __name__, url_prefix="/api/tasks")
 
@@ -23,9 +24,18 @@ def create_task():
 
     task_data = task_schema.load(data)
     task = Task(title=task_data["title"], description=task_data.get("description"))
+
+    if "tags" in data:
+        tags_data = data["tags"]
+        for tag_data in tags_data:
+            tag = Tag.query.filter_by(name=tag_data["name"]).first()
+            if not tag:
+                tag = Tag(name=tag_data["name"])
+                db.session.add(tag)
+            task.tags.append(tag)
+
     db.session.add(task)
     db.session.commit()
-
     result = task_schema.dump(task)
     return jsonify(result), 201
 
@@ -34,7 +44,6 @@ def create_task():
 def update_task(task_id):
     task = Task.query.get_or_404(task_id)
     data = request.get_json()
-
     errors = task_schema.validate(data, partial=True)
     if errors:
         return jsonify({"errors": errors}), 400
@@ -46,9 +55,16 @@ def update_task(task_id):
         task.description = task_data.get("description")
     if "completed" in task_data:
         task.completed = task_data["completed"]
+    if "tags" in data:
+        task.tags.clear()
+        for tag_data in data["tags"]:
+            tag = Tag.query.filter_by(name=tag_data["name"]).first()
+            if not tag:
+                tag = Tag(name=tag_data["name"])
+                db.session.add(tag)
+            task.tags.append(tag)
 
     db.session.commit()
-
     result = task_schema.dump(task)
     return jsonify(result)
 
