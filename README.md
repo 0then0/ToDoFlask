@@ -54,10 +54,12 @@ A simple ToDo application built with Flask and PostgreSQL.
 
 ## API Endpoints
 
-| Method | Endpoint      | Description       |
-| ------ | ------------- | ----------------- |
-| GET    | `/api/tasks/` | Get all tasks     |
-| POST   | `/api/tasks/` | Create a new task |
+| Method | Endpoint          | Description         |
+| ------ | ----------------- | ------------------- |
+| GET    | `/api/tasks/`     | Get all tasks       |
+| POST   | `/api/tasks/`     | Create a new task   |
+| PUT    | `/api/tasks/<id>` | Update a task by ID |
+| DELETE | `/api/tasks/<id>` | Delete a task by ID |
 
 Example POST request:
 

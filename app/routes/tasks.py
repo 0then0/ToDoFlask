@@ -28,3 +28,34 @@ def create_task():
 
     result = task_schema.dump(task)
     return jsonify(result), 201
+
+
+@bp.route("/<int:task_id>", methods=["PUT"])
+def update_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    data = request.get_json()
+
+    errors = task_schema.validate(data, partial=True)
+    if errors:
+        return jsonify({"errors": errors}), 400
+
+    task_data = task_schema.load(data, partial=True)
+    if "title" in task_data:
+        task.title = task_data["title"]
+    if "description" in task_data:
+        task.description = task_data.get("description")
+    if "completed" in task_data:
+        task.completed = task_data["completed"]
+
+    db.session.commit()
+
+    result = task_schema.dump(task)
+    return jsonify(result)
+
+
+@bp.route("/<int:task_id>", methods=["DELETE"])
+def delete_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    db.session.delete(task)
+    db.session.commit()
+    return jsonify({"message": f"Task {task_id} deleted"}), 200
