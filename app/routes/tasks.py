@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy import asc, desc
 
 from app import db
 from app.models.tag import Tag
@@ -10,7 +11,32 @@ bp = Blueprint("tasks", __name__, url_prefix="/api/tasks")
 
 @bp.route("/", methods=["GET"])
 def get_tasks():
-    tasks = Task.query.all()
+    query = Task.query
+
+    completed_str = request.args.get("completed")
+    if completed_str is not None:
+        completed = completed_str.lower() == "true"
+        query = query.filter(Task.completed == completed)
+
+    sort = request.args.get("sort", default="id", type=str)
+    order = request.args.get("order", default="asc", type=str)
+
+    sortable_fields = {
+        "id": Task.id,
+        "title": Task.title,
+        "created_at": Task.created_at,
+        "completed": Task.completed,
+    }
+
+    if sort in sortable_fields:
+        if order.lower() == "desc":
+            query = query.order_by(desc(sortable_fields[sort]))
+        else:
+            query = query.order_by(asc(sortable_fields[sort]))
+    else:
+        query = query.order_by(asc(Task.id))
+
+    tasks = query.all()
     result = tasks_schema.dump(tasks)
     return jsonify(result)
 
@@ -55,6 +81,7 @@ def update_task(task_id):
         task.description = task_data.get("description")
     if "completed" in task_data:
         task.completed = task_data["completed"]
+
     if "tags" in data:
         task.tags.clear()
         for tag_data in data["tags"]:

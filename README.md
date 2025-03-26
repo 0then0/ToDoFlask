@@ -4,9 +4,12 @@ A simple ToDo application built with Flask and PostgreSQL.
 
 ## Features
 
-- Create, read, update, and delete tasks
-- Store tasks in a PostgreSQL database
-- Basic CRUD operations via RESTful endpoints
+- Create, read, update, and delete tasks (CRUD)
+- Track task creation and update timestamps
+- Assign tags to tasks with many-to-many relationship
+- Filter tasks by completion status
+- Sort tasks by various fields (id, title, created_at, completed)
+- Store tasks and tags in a PostgreSQL database
 
 ## Prerequisites
 
@@ -17,14 +20,14 @@ A simple ToDo application built with Flask and PostgreSQL.
 
 1. **Clone the repository:**
 
-   ```
+   ```sh
    git clone https://github.com/0then0/ToDoFlask
    cd ToDoFlask
    ```
 
 2. **Create a virtual environment and install dependencies:**
 
-   ```
+   ```sh
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    pip install -r requirements.txt
@@ -34,6 +37,7 @@ A simple ToDo application built with Flask and PostgreSQL.
 
    - Create a database (e.g., `todo_db`).
    - Update the `.env` file with your database credentials:
+
      ```
      DATABASE_URL=postgresql://user:password@localhost:5432/todo_db
      SECRET_KEY=your-secret-key
@@ -41,14 +45,14 @@ A simple ToDo application built with Flask and PostgreSQL.
 
 4. **Initialize the database:**
 
-   ```
+   ```sh
    flask db init
    flask db migrate
    flask db upgrade
    ```
 
 5. **Run the application:**
-   ```
+   ```sh
    python run.py
    ```
 
@@ -62,17 +66,27 @@ A simple ToDo application built with Flask and PostgreSQL.
 | DELETE | `/api/tasks/<id>` | Delete a task by ID |
 | GET    | `/api/tags/`      | Get all tags        |
 
+**Query Parameters for GET /api/tasks/**:
+
+- `completed`: Boolean (e.g., `true` or `false`) - Filter tasks by completion status
+- `sort`: String (e.g., `id`, `title`, `created_at`, `completed`) - Field to sort by
+- `order`: String (e.g., `asc`, `desc`) - Sort order (default: `asc`)
+
 **Task Fields:**
 
 - `id`: Integer (read-only)
-- `title`: String (required)
+- `title`: String (required, max 100 chars)
 - `description`: String (optional)
-- `completed`: Boolean (default: false)
+- `completed`: Boolean (default: `false`)
 - `created_at`: DateTime (read-only)
 - `updated_at`: DateTime (read-only)
-- `tags`: List of tags (optional) (e.g., [{"name": "work"}])
+- `tags`: List of tags (optional), (e.g., [{"name": "work"}])
 
-Example POST request:
+**Examples:**
+
+- `GET /api/tasks?completed=false` - Get all incomplete tasks
+- `GET /api/tasks?sort=created_at&order=desc` - Sort tasks by creation date in descending order
+- `POST /api/tasks/`:
 
 ```json
 {
